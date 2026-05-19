@@ -37,7 +37,7 @@ const {
   textForFunctionCallOutput,
   normalizeXaiResponsesInput,
   rewriteXaiResponsesPayload,
-} = xaiLogic as any;
+} = xaiLogic;
 
 const MODELS = [
   {

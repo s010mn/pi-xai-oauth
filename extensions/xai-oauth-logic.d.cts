@@ -1,3 +1,31 @@
+import type { OAuthCredentials, SimpleStreamOptions } from "@earendil-works/pi-ai";
+
+type CallbackResult = {
+  code?: string;
+  state?: string;
+  error?: string;
+  error_description?: string;
+};
+
+type XaiDiscovery = {
+  authorization_endpoint: string;
+};
+
+type XaiTokenPayload = {
+  access_token?: string;
+  refresh_token?: string;
+  id_token?: string;
+  expires_in?: number;
+  token_type?: string;
+};
+
+type CallbackServer = {
+  redirectUri: string;
+  waitForCallback(signal?: AbortSignal): Promise<CallbackResult>;
+  resolveCallback(result: CallbackResult): void;
+  close(): void;
+};
+
 declare const xaiLogic: {
   XAI_OAUTH_ISSUER: string;
   XAI_OAUTH_CLIENT_ID: string;
@@ -9,25 +37,20 @@ declare const xaiLogic: {
   XAI_GROK_CLI_AUTH_SCOPE_KEY: string;
   XAI_GROK_CLI_LEGACY_AUTH_SCOPE_KEY: string;
   parseExpiry(value: unknown): number | undefined;
-  getGrokAuthCredentials(): any;
+  getGrokAuthCredentials(): OAuthCredentials | null;
   pkcePair(): { verifier: string; challenge: string };
   validateXaiEndpoint(url: string): string;
   callbackCorsOrigin(origin: string | undefined): string | undefined;
-  startCallbackServer(): Promise<{
-    redirectUri: string;
-    waitForCallback(signal?: AbortSignal): Promise<any>;
-    resolveCallback(result: any): void;
-    close(): void;
-  }>;
+  startCallbackServer(): Promise<CallbackServer>;
   buildAuthorizeUrl(
-    discovery: { authorization_endpoint: string },
+    discovery: XaiDiscovery,
     redirectUri: string,
     challenge: string,
     state: string,
     nonce: string,
   ): string;
-  parseCallbackInput(input: string): any;
-  credentialsFromTokenPayload(data: any, tokenEndpoint: string, fallbackRefresh?: string): any;
+  parseCallbackInput(input: string): CallbackResult | undefined;
+  credentialsFromTokenPayload(data: XaiTokenPayload, tokenEndpoint: string, fallbackRefresh?: string): OAuthCredentials;
   stripShellQuotes(value: string): string;
   unescapeShellPath(value: string): string;
   imageMimeTypeForPath(path: string): string;
@@ -40,7 +63,7 @@ declare const xaiLogic: {
   isResponsesInputImagePart(value: unknown): value is Record<string, any>;
   textForFunctionCallOutput(output: unknown): string;
   normalizeXaiResponsesInput(input: unknown[], model: { input?: unknown[] }): unknown[];
-  rewriteXaiResponsesPayload(payload: unknown, model: { id?: string; input?: unknown[] }, options?: { sessionId?: string }): unknown;
+  rewriteXaiResponsesPayload(payload: unknown, model: { id?: string; input?: unknown[] }, options?: SimpleStreamOptions): unknown;
 };
 
 export default xaiLogic;
