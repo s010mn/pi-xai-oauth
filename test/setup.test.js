@@ -55,7 +55,10 @@ test("setup installs the package and seeds pi settings in automated mode", () =>
 
   fs.writeFileSync(
     piPath,
-    `#!/bin/sh\nprintf '%s\\n' \"$*\" >> \"$PI_LOG\"\nexit 0\n`,
+    `#!/bin/sh
+printf '%s\\n' "$*" >> "$PI_LOG"
+exit 0
+`,
     { mode: 0o755 },
   );
 
