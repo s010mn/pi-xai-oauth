@@ -21,6 +21,7 @@
     "pi-xai-oauth": "bin/setup.js"
   },
   "scripts": {
+    "test": "node --test",
     "scaffold": "node bin/setup.js --scaffold",
     "setup": "node bin/setup.js"
   },
