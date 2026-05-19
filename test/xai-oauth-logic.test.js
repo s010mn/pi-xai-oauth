@@ -124,11 +124,11 @@ test("image helpers normalize local files, URLs, and path quoting", () =>
     const expectedBase64 = Buffer.from(PNG_BASE64, "base64").toString("base64");
     fs.writeFileSync(pngPath, Buffer.from(PNG_BASE64, "base64"));
 
-    assert.equal(logic.stripShellQuotes(`"${pngPath}"`), pngPath);
-    assert.equal(logic.unescapeShellPath(`"${pngPath.replace(/ /g, "\\ ")}"`), pngPath);
-    assert.equal(logic.imageMimeTypeForPath(pngPath), "image/png");
-    assert.equal(logic.normalizeXaiImageInput("https://example.com/image.png"), "https://example.com/image.png");
-    assert.equal(logic.normalizeXaiImageInput(`"${pngPath.replace(/ /g, "\\ ")}"`), `data:image/png;base64,${expectedBase64}`);
+  assert.equal(logic.stripShellQuotes(`"${pngPath}"`), pngPath);
+  assert.equal(logic.unescapeShellPath(String.raw`"/tmp/My\ Image.png"`), "/tmp/My Image.png");
+  assert.equal(logic.imageMimeTypeForPath(pngPath), "image/png");
+  assert.equal(logic.normalizeXaiImageInput("https://example.com/image.png"), "https://example.com/image.png");
+  assert.equal(logic.normalizeXaiImageInput(`"${pngPath}"`), `data:image/png;base64,${expectedBase64}`);
     assert.throws(() => logic.normalizeXaiImageInput(path.join(tmpDir, "missing.gif")));
     assert.throws(() => logic.imageMimeTypeForPath(path.join(tmpDir, "missing.gif")));
   }));
@@ -205,5 +205,6 @@ test("callback server serves the callback route and CORS preflight", async () =>
   assert.equal(callbackResponse.status, 200);
   assert.match(await callbackResponse.text(), /authorization received/i);
 
-  await assert.deepEqual(await callbackPromise, { code: "abc123", state: "state-1", error: undefined, error_description: undefined });
+  const callback = await callbackPromise;
+  assert.deepEqual(callback, { code: "abc123", state: "state-1", error: undefined, error_description: undefined });
 });

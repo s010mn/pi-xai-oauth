@@ -1,6 +1,6 @@
 "use strict";
 
-const { createHash, randomBytes, randomUUID } = require("crypto");
+const { createHash, randomBytes } = require("crypto");
 const { existsSync, readFileSync } = require("fs");
 const { createServer } = require("http");
 const { homedir } = require("os");
